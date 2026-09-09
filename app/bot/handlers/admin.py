@@ -320,13 +320,13 @@ async def cmd_addchannel(message: types.Message, command: CommandObject):
             await message.answer("This channel is already authorized.")
             return
             
-        # For simplicity, if they provided a username, we set chat_id to a dummy or try to resolve it.
-        # Actually we need telegram_chat_id as NOT NULL UNIQUE in our schema.
-        # If they only gave a username, we can't easily insert 0 if another one has 0. 
-        # We must require the numeric ID.
         if chat_id == 0:
-            await message.answer("Please provide the numeric Telegram Chat ID (starts with -100...). Usernames alone cannot be reliably stored without an ID in our current schema.")
-            return
+            try:
+                chat = await message.bot.get_chat(f"@{username}")
+                chat_id = chat.id
+            except Exception as e:
+                await message.answer(f"Could not find the public channel @{username}. Please make sure the channel exists, or provide the numeric Chat ID manually (starts with -100).")
+                return
 
         new_channel = AuthorizedChannel(
             telegram_chat_id=chat_id,
