@@ -25,13 +25,13 @@ async def cmd_start(message: types.Message):
     await message.answer(
         "Welcome to the Auto Reaction Admin Bot.\n"
         "Commands:\n"
-        "/react <telegram_post_link> <emoji> - Create a reaction job\n"
-        "/status <job_id> - Check job status\n"
-        "/cancel <job_id> - Cancel a job\n"
+        "/react [telegram_post_link] [emoji] - Create a reaction job\n"
+        "/status [job_id] - Check job status\n"
+        "/cancel [job_id] - Cancel a job\n"
         "/bots - Manage reaction bots\n"
-        "/addbot <token> <name> - Add a new reaction bot\n"
+        "/addbot [token] [name] - Add a new reaction bot\n"
         "/channels - Manage authorized channels\n"
-        "/addchannel <id_or_username> <title> - Add an authorized channel\n"
+        "/addchannel [id_or_username] [title] - Add an authorized channel\n"
         "/help - Show help"
     )
 
@@ -42,12 +42,12 @@ async def cmd_help(message: types.Message):
 @dp.message(Command("react"))
 async def cmd_react(message: types.Message, command: CommandObject):
     if not command.args:
-        await message.answer("Usage: /react <telegram_post_link> <emoji>")
+        await message.answer("Usage: /react [telegram_post_link] [emoji]")
         return
         
     parts = command.args.split(maxsplit=1)
     if len(parts) != 2:
-        await message.answer("Usage: /react <telegram_post_link> <emoji>")
+        await message.answer("Usage: /react [telegram_post_link] [emoji]")
         return
         
     url, emoji = parts
@@ -126,7 +126,7 @@ async def cmd_react(message: types.Message, command: CommandObject):
 @dp.message(Command("status"))
 async def cmd_status(message: types.Message, command: CommandObject):
     if not command.args:
-        await message.answer("Usage: /status <job_id>")
+        await message.answer("Usage: /status [job_id]")
         return
         
     job_id = command.args.strip()
@@ -154,7 +154,7 @@ async def cmd_status(message: types.Message, command: CommandObject):
 @dp.message(Command("cancel"))
 async def cmd_cancel(message: types.Message, command: CommandObject):
     if not command.args:
-        await message.answer("Usage: /cancel <job_id>")
+        await message.answer("Usage: /cancel [job_id]")
         return
         
     job_id = command.args.strip()
@@ -240,12 +240,12 @@ async def cmd_channels(message: types.Message):
 @dp.message(Command("addbot"))
 async def cmd_addbot(message: types.Message, command: CommandObject):
     if not command.args:
-        await message.answer("Usage: /addbot <token> <name>")
+        await message.answer("Usage: /addbot [token] [name]")
         return
         
     parts = command.args.split(maxsplit=1)
     if len(parts) != 2:
-        await message.answer("Usage: /addbot <token> <name>")
+        await message.answer("Usage: /addbot [token] [name]")
         return
         
     token, name = parts
@@ -285,12 +285,12 @@ async def cmd_addbot(message: types.Message, command: CommandObject):
 @dp.message(Command("addchannel"))
 async def cmd_addchannel(message: types.Message, command: CommandObject):
     if not command.args:
-        await message.answer("Usage: /addchannel <chat_id_or_username> <title>")
+        await message.answer("Usage: /addchannel [chat_id_or_username] [title]")
         return
         
     parts = command.args.split(maxsplit=1)
     if len(parts) != 2:
-        await message.answer("Usage: /addchannel <chat_id_or_username> <title>")
+        await message.answer("Usage: /addchannel [chat_id_or_username] [title]")
         return
         
     identifier, title = parts
