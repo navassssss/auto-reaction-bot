@@ -53,6 +53,9 @@ class TelegramReactionService:
             try:
                 response = await client.post(url, json=payload, timeout=15.0)
                 data = response.json()
+                if response.status_code != 200:
+                    logger.error(f"Telegram API Error on setMessageReaction: {response.status_code} - {response.text}")
+                    
                 return {
                     "status_code": response.status_code,
                     "data": data
