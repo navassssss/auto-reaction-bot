@@ -42,7 +42,9 @@ All data, including reaction tasks and authorized channels, must be stored in a 
 1.  Push this entire codebase to a private GitHub repository.
 2.  Go to [Render](https://render.com/) and click **New -> Web Service**.
 3.  Connect your GitHub repository and select it.
-4.  Render will automatically use the `render.yaml` configuration file to set up the build and start commands (`pip install -r requirements.txt` and `uvicorn app.main:app --host 0.0.0.0 --port $PORT`).
+4.  In the deployment settings, you must manually set the commands (if not using Blueprint):
+    *   **Build Command:** `pip install -r requirements.txt` (or `pip install .`)
+    *   **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 5.  Set the environment variables in the Render dashboard:
     *   `TELEGRAM_BOT_TOKEN`: (Your Admin Bot Token)
     *   `TELEGRAM_WEBHOOK_SECRET`: (A random, secure string you generate, e.g., `my_secret_token_123`)
