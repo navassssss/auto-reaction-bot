@@ -115,7 +115,7 @@ class WorkerManager:
         
         emoji_to_send = emoji.strip()
         if emoji_to_send.lower() == 'random':
-            emoji_to_send = random.choice(['👍', '❤', '🔥', '🥰', '👏', '🎉', '🤩'])
+            emoji_to_send = random.choice(['👍', '❤', '🔥', '🥰'])
             
         response = await telegram_service.set_reaction(bot_token, chat_id, message_id, emoji_to_send)
         
