@@ -25,7 +25,7 @@ async def cmd_start(message: types.Message):
     await message.answer(
         "Welcome to the Auto Reaction Admin Bot.\n"
         "Commands:\n"
-        "/react [telegram_post_link] [emoji] - Create a reaction job\n"
+        "/react [telegram_post_link] [emoji] - Create a reaction job (Use 'random' for mixed emojis)\n"
         "/status [job_id] - Check job status\n"
         "/cancel [job_id] - Cancel a job\n"
         "/bots - Manage reaction bots\n"

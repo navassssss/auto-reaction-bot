@@ -109,10 +109,16 @@ class WorkerManager:
             
             return task_id, job_id, bot_token, chat_id, message_id, emoji
 
+import random
+
     async def process_task(self, worker_id: int, task_id: int, job_id: str, bot_token: str, chat_id: int, message_id: int, emoji: str):
         logger.info(f"Worker {worker_id} processing task {task_id} for job {job_id}")
         
-        response = await telegram_service.set_reaction(bot_token, chat_id, message_id, emoji)
+        emoji_to_send = emoji
+        if emoji.lower() == 'random':
+            emoji_to_send = random.choice(['👍', '❤', '🔥', '🥰', '👏', '🎉', '🤩', '💯', '⚡', '🏆'])
+            
+        response = await telegram_service.set_reaction(bot_token, chat_id, message_id, emoji_to_send)
         
         if response.get("status_code") == 200 and response.get("data", {}).get("ok"):
             await self.mark_task_success(task_id, bot_token)
