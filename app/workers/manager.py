@@ -114,8 +114,8 @@ import random
     async def process_task(self, worker_id: int, task_id: int, job_id: str, bot_token: str, chat_id: int, message_id: int, emoji: str):
         logger.info(f"Worker {worker_id} processing task {task_id} for job {job_id}")
         
-        emoji_to_send = emoji
-        if emoji.lower() == 'random':
+        emoji_to_send = emoji.strip()
+        if emoji_to_send.lower() == 'random':
             emoji_to_send = random.choice(['👍', '❤', '🔥', '🥰', '👏', '🎉', '🤩', '💯', '⚡', '🏆'])
             
         response = await telegram_service.set_reaction(bot_token, chat_id, message_id, emoji_to_send)
@@ -130,13 +130,10 @@ import random
             if status_code == 429:
                 retry_after = data.get("parameters", {}).get("retry_after", 30)
                 logger.warning(f"Task {task_id} hit rate limit. Retry after {retry_after}s.")
-                # We can delay the task by leaving it pending and maybe recording next_run_at (if we add that column)
-                # For now, mark failed or pending. We'll mark it pending and sleep the worker? No, that blocks the worker.
-                # Better: mark it pending, maybe with a small sleep if all workers hit it.
-                await asyncio.sleep(min(retry_after, 10)) # sleep a bit, then requeue
+                await asyncio.sleep(min(retry_after, 10)) 
                 await self.requeue_task(task_id)
             else:
-                await self.mark_task_failed(task_id, error_msg, status_code)
+                await self.mark_task_failed(task_id, f"{error_msg} (Sent: {repr(emoji_to_send)})", status_code)
         
         await self.update_job_status(job_id)
 
