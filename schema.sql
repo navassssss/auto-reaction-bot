@@ -4,6 +4,12 @@ CREATE TABLE admins (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE app_settings (
+    key VARCHAR(100) PRIMARY KEY,
+    value JSONB NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE authorized_channels (
     id SERIAL PRIMARY KEY,
     telegram_chat_id BIGINT UNIQUE NOT NULL,

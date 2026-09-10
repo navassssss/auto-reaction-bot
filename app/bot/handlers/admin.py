@@ -8,7 +8,7 @@ import logging
 
 from app.bot.main import dp
 from app.database import AsyncSessionLocal
-from app.models import AuthorizedChannel, ReactionBot, ReactionJob, ReactionTask, AuditLog
+from app.models import AuthorizedChannel, ReactionBot, ReactionJob, ReactionTask, AuditLog, AppSetting
 from app.telegram import telegram_service
 
 logger = logging.getLogger(__name__)
@@ -32,6 +32,7 @@ async def cmd_start(message: types.Message):
         "/addbot [token] [name] - Add a new reaction bot\n"
         "/channels - Manage authorized channels\n"
         "/addchannel [id_or_username] [title] - Add an authorized channel\n"
+        "/setemojis [emoji1] [emoji2] - Set the list of random emojis\n"
         "/help - Show help"
     )
 
@@ -347,3 +348,36 @@ async def cmd_addchannel(message: types.Message, command: CommandObject):
         await session.commit()
         
     await message.answer(f"Channel '{title}' successfully authorized!")
+
+@dp.message(Command("setemojis"))
+async def cmd_setemojis(message: types.Message, command: CommandObject):
+    if not command.args:
+        await message.answer("Usage: /setemojis [emoji1] [emoji2] ...\nExample: /setemojis 👍 ❤️ 🔥")
+        return
+        
+    emojis = command.args.split()
+    if not emojis:
+        await message.answer("Please provide at least one emoji.")
+        return
+        
+    async with AsyncSessionLocal() as session:
+        stmt = select(AppSetting).where(AppSetting.key == 'random_emojis')
+        res = await session.execute(stmt)
+        setting = res.scalars().first()
+        
+        if not setting:
+            setting = AppSetting(key='random_emojis', value=emojis)
+            session.add(setting)
+        else:
+            setting.value = emojis
+            
+        audit = AuditLog(
+            admin_telegram_id=message.from_user.id,
+            action="set_emojis",
+            metadata_={"emojis": emojis}
+        )
+        session.add(audit)
+        
+        await session.commit()
+        
+    await message.answer(f"Random emojis list successfully updated to: {' '.join(emojis)}")

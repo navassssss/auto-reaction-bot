@@ -4,7 +4,7 @@ import logging
 from sqlalchemy import select, update, and_
 from datetime import datetime, timezone
 from app.database import AsyncSessionLocal
-from app.models import ReactionTask, ReactionJob, ReactionBot
+from app.models import ReactionTask, ReactionJob, ReactionBot, AppSetting
 from app.telegram import telegram_service
 
 logger = logging.getLogger(__name__)
@@ -115,7 +115,15 @@ class WorkerManager:
         
         emoji_to_send = emoji.strip()
         if emoji_to_send.lower() == 'random':
-            emoji_to_send = random.choice(['👍', '❤', '🔥', '🥰'])
+            async with AsyncSessionLocal() as session:
+                stmt = select(AppSetting).where(AppSetting.key == 'random_emojis')
+                res = await session.execute(stmt)
+                setting = res.scalars().first()
+                if setting and setting.value:
+                    emoji_list = setting.value
+                else:
+                    emoji_list = ['👍', '❤', '🔥', '🥰']
+            emoji_to_send = random.choice(emoji_list)
             
         response = await telegram_service.set_reaction(bot_token, chat_id, message_id, emoji_to_send)
         
