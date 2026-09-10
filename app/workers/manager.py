@@ -1,4 +1,5 @@
 import asyncio
+import random
 import logging
 from sqlalchemy import select, update, and_
 from datetime import datetime, timezone
@@ -108,8 +109,6 @@ class WorkerManager:
             bot_token = bot_row[0] # Note: Should decrypt token here in a real app, assuming plaintext/simple encryption for now
             
             return task_id, job_id, bot_token, chat_id, message_id, emoji
-
-import random
 
     async def process_task(self, worker_id: int, task_id: int, job_id: str, bot_token: str, chat_id: int, message_id: int, emoji: str):
         logger.info(f"Worker {worker_id} processing task {task_id} for job {job_id}")
