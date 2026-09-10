@@ -114,6 +114,10 @@ Once a channel is authorized and reaction bots are configured and added to the c
     ```
     /react https://t.me/my_cool_channel/123 👍
     ```
+    *Tip: You can also use the word `random` instead of a specific emoji to have each bot choose a random positive emoji!*
+    ```
+    /react https://t.me/my_cool_channel/123 random
+    ```
 3.  The bot will reply with a Job ID and queue the task. 
 4.  The background workers inside Render will pick up the task, process the reactions respecting Telegram's rate limits, and update the database.
 
