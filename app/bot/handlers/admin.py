@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime, timezone
 from aiogram import types, F
 from aiogram.filters import Command, CommandStart, CommandObject
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy import select, update, func, delete
 import logging
 
@@ -22,10 +23,22 @@ def parse_telegram_url(url: str):
 
 @dp.message(CommandStart())
 async def cmd_start(message: types.Message):
+    builder = InlineKeyboardBuilder()
+    builder.button(text="✍️ React", switch_inline_query_current_chat="/react ")
+    builder.button(text="🔍 Status", switch_inline_query_current_chat="/status ")
+    builder.button(text="❌ Cancel Job", switch_inline_query_current_chat="/cancel ")
+    builder.button(text="🤖 Add Bot", switch_inline_query_current_chat="/addbot ")
+    builder.button(text="📢 Add Channel", switch_inline_query_current_chat="/addchannel ")
+    builder.button(text="😀 Set Random Emojis", switch_inline_query_current_chat="/setemojis ")
+    builder.button(text="🤖 List Bots", callback_data="none", switch_inline_query_current_chat="/bots")
+    builder.button(text="📢 List Channels", callback_data="none", switch_inline_query_current_chat="/channels")
+    builder.adjust(2)
+
     await message.answer(
-        "Welcome to the Auto Reaction Admin Bot.\n"
+        "Welcome to the Auto Reaction Admin Bot.\n\n"
+        "Tap a button below to auto-fill the command into your chat, then type your arguments! You can also type them manually:\n\n"
         "Commands:\n"
-        "/react [telegram_post_link] [emoji] - Create a reaction job (Use 'random' for mixed emojis)\n"
+        "/react [post_link] [emoji] - Create a reaction job (Use 'random' for mixed emojis)\n"
         "/status [job_id] - Check job status\n"
         "/cancel [job_id] - Cancel a job\n"
         "/bots - Manage reaction bots\n"
@@ -33,7 +46,8 @@ async def cmd_start(message: types.Message):
         "/channels - Manage authorized channels\n"
         "/addchannel [id_or_username] [title] - Add an authorized channel\n"
         "/setemojis [emoji1] [emoji2] - Set the list of random emojis\n"
-        "/help - Show help"
+        "/help - Show this help menu",
+        reply_markup=builder.as_markup()
     )
 
 @dp.message(Command("help"))
