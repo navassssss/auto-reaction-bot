@@ -37,6 +37,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Telegram Reaction Manager", lifespan=lifespan)
 
+@app.get("/")
+async def root():
+    return {"message": "Auto Reaction Bot is running. Monitored by UptimeRobot."}
+
 @app.get("/health")
 async def health_check():
     return {
