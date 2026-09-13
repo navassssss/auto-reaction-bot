@@ -324,17 +324,7 @@ async def cmd_addchannel(message: types.Message, command: CommandObject):
         return
         
     async with AsyncSessionLocal() as session:
-        # Check if already exists
-        if chat_id != 0:
-            stmt = select(AuthorizedChannel).where(AuthorizedChannel.telegram_chat_id == chat_id)
-        else:
-            stmt = select(AuthorizedChannel).where(AuthorizedChannel.username == username)
-            
-        existing = await session.execute(stmt)
-        if existing.scalars().first():
-            await message.answer("This channel is already authorized.")
-            return
-            
+        # Resolve chat_id if only username was provided
         if chat_id == 0:
             try:
                 chat = await message.bot.get_chat(f"@{username}")
@@ -342,6 +332,13 @@ async def cmd_addchannel(message: types.Message, command: CommandObject):
             except Exception as e:
                 await message.answer(f"Could not find the public channel @{username}. Please make sure the channel exists, or provide the numeric Chat ID manually (starts with -100).")
                 return
+
+        # Now check if it already exists by chat_id
+        stmt = select(AuthorizedChannel).where(AuthorizedChannel.telegram_chat_id == chat_id)
+        existing = await session.execute(stmt)
+        if existing.scalars().first():
+            await message.answer("This channel is already authorized.")
+            return
 
         new_channel = AuthorizedChannel(
             telegram_chat_id=chat_id,
