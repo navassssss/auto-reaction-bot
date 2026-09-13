@@ -336,8 +336,15 @@ async def cmd_addchannel(message: types.Message, command: CommandObject):
         # Now check if it already exists by chat_id
         stmt = select(AuthorizedChannel).where(AuthorizedChannel.telegram_chat_id == chat_id)
         existing = await session.execute(stmt)
-        if existing.scalars().first():
-            await message.answer("This channel is already authorized.")
+        channel_record = existing.scalars().first()
+        if channel_record:
+            if channel_record.username != username or channel_record.title != title:
+                channel_record.username = username
+                channel_record.title = title
+                await session.commit()
+                await message.answer(f"Channel was already authorized, but its username/title have been updated to '{username}' / '{title}'!")
+            else:
+                await message.answer("This channel is already authorized.")
             return
 
         new_channel = AuthorizedChannel(
